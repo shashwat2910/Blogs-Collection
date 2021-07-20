@@ -1,9 +1,11 @@
 const express = require('express')
 const path = require('path')
+const mongoose = require('mongoose')
 const passport = require('passport')
 const session = require('express-session')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
+const MongoStore = require('connect-mongo')
 const connectDB = require('./config/db')
 const exphbs = require('express-handlebars')
 
@@ -28,7 +30,8 @@ app.set('view engine', '.hbs')
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new MongoStore({mongoUrl: process.env.MONGO_URI})
 }))
 
 // Passport middleware
@@ -41,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Routes
 app.use('/', require('./routes/index'))
 app.use('/auth', require('./routes/auth'))
+app.use('/blogs', require('./routes/blog'))
 
 const PORT = process.env.PORT || 5000
 
